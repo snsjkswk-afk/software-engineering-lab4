@@ -1,0 +1,75 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1100 460" width="1100" height="460" font-family="Microsoft YaHei, SimHei, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#2F4257"/>
+    </marker>
+    <style>
+      .box { fill:#FBFCFE; stroke:#2F4257; stroke-width:1.6; }
+      .name { font-size:17px; font-weight:700; fill:#16222E; }
+      .act { font-size:12px; fill:#4A5C70; }
+      .flow { stroke:#2F4257; stroke-width:1.6; fill:none; }
+      .lbl { font-size:12.5px; fill:#33475B; }
+      .sep { stroke:#C3D0E0; stroke-width:1; }
+      .note { fill:#FFFDF3; stroke:#B99B47; stroke-width:1.2; }
+      .ntxt { font-size:12px; fill:#5C4C1E; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1100" height="460" fill="#FFFFFF"/>
+
+  <!-- 初始伪状态 -->
+  <circle cx="70" cy="280" r="8" fill="#2F4257"/>
+  <path class="flow" d="M78,280 L156,280" marker-end="url(#arrow)"/>
+
+  <!-- 普通扫描 -->
+  <rect class="box" x="160" y="235" width="210" height="90" rx="9"/>
+  <text class="name" x="265" y="263" text-anchor="middle">普通扫描 NORMAL</text>
+  <line class="sep" x1="180" y1="275" x2="350" y2="275"/>
+  <text class="act" x="265" y="299" text-anchor="middle">do / 等待起始双引号</text>
+
+  <!-- 自迁移：其他字符 -->
+  <path class="flow" d="M220,325 C220,362 310,362 310,325" marker-end="url(#arrow)"/>
+  <text class="lbl" x="265" y="392" text-anchor="middle">其他字符 / 忽略</text>
+
+  <!-- 字符串内 -->
+  <rect class="box" x="490" y="235" width="210" height="90" rx="9"/>
+  <text class="name" x="595" y="263" text-anchor="middle">字符串内 IN_STRING</text>
+  <line class="sep" x1="510" y1="275" x2="680" y2="275"/>
+  <text class="act" x="595" y="299" text-anchor="middle">do / 累积字符串内容</text>
+
+  <!-- 转义 -->
+  <rect class="box" x="490" y="75" width="210" height="90" rx="9"/>
+  <text class="name" x="595" y="103" text-anchor="middle">转义 ESCAPE</text>
+  <line class="sep" x1="510" y1="115" x2="680" y2="115"/>
+  <text class="act" x="595" y="139" text-anchor="middle">entry / 丢弃反斜杠</text>
+
+  <!-- 普通扫描 -> 字符串内 -->
+  <path class="flow" d="M370,265 L488,265" marker-end="url(#arrow)"/>
+  <text class="lbl" x="429" y="253" text-anchor="middle">遇到 &quot; / 开始记录</text>
+
+  <!-- 字符串内 -> 普通扫描 -->
+  <path class="flow" d="M490,300 L372,300" marker-end="url(#arrow)"/>
+  <text class="lbl" x="432" y="346" text-anchor="middle">遇到 &quot; / 输出并清空</text>
+
+  <!-- 字符串内 -> 转义 -->
+  <path class="flow" d="M595,235 L595,167" marker-end="url(#arrow)"/>
+  <text class="lbl" x="583" y="200" text-anchor="end">遇到反斜杠 \</text>
+
+  <!-- 转义 -> 字符串内 -->
+  <path class="flow" d="M630,165 L630,233" marker-end="url(#arrow)"/>
+  <text class="lbl" x="642" y="192">任意字符 c</text>
+  <text class="lbl" x="642" y="208">追加 c 并回到字符串内</text>
+
+  <!-- 自迁移：字符串内其他字符 -->
+  <path class="flow" d="M700,265 C740,265 740,305 700,305" marker-end="url(#arrow)"/>
+  <text class="lbl" x="750" y="278">其他字符</text>
+  <text class="lbl" x="750" y="294">追加到缓冲</text>
+
+  <!-- 说明 -->
+  <rect class="note" x="770" y="60" width="310" height="126" rx="4"/>
+  <text class="ntxt" x="786" y="82">状态机语义说明：</text>
+  <text class="ntxt" x="786" y="104">① 进入 IN_STRING 时清空缓冲；</text>
+  <text class="ntxt" x="786" y="124">② 遇结束双引号即输出一个字符串；</text>
+  <text class="ntxt" x="786" y="144">③ ESCAPE 只接收一个字符便回退；</text>
+  <text class="ntxt" x="786" y="164">④ 文件结束仍在串内视为未闭合，丢弃。</text>
+</svg>

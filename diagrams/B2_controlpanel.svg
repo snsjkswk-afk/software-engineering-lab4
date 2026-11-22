@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1080 660" width="1080" height="660" font-family="Microsoft YaHei, SimHei, sans-serif">
+  <defs>
+    <marker id="arrow" viewBox="0 0 10 10" refX="9.5" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+      <path d="M0,0 L10,5 L0,10 Z" fill="#2F4257"/>
+    </marker>
+    <style>
+      .box { fill:#FBFCFE; stroke:#2F4257; stroke-width:1.6; }
+      .name { font-size:17px; font-weight:700; fill:#16222E; }
+      .act { font-size:12px; fill:#4A5C70; }
+      .flow { stroke:#2F4257; stroke-width:1.6; fill:none; }
+      .lbl { font-size:12.5px; fill:#33475B; }
+      .sep { stroke:#C3D0E0; stroke-width:1; }
+      .choice { font-size:13px; fill:#16222E; }
+    </style>
+  </defs>
+
+  <rect x="0" y="0" width="1080" height="660" fill="#FFFFFF"/>
+
+  <!-- 初始伪状态 -->
+  <circle cx="250" cy="125" r="8" fill="#2F4257"/>
+  <path class="flow" d="M258,125 L376,125" marker-end="url(#arrow)"/>
+  <text class="lbl" x="315" y="113" text-anchor="middle">系统启动</text>
+
+  <!-- 读取键入字符 -->
+  <rect class="box" x="380" y="100" width="230" height="90" rx="9"/>
+  <text class="name" x="495" y="128" text-anchor="middle">读取键入字符</text>
+  <line class="sep" x1="400" y1="140" x2="590" y2="140"/>
+  <text class="act" x="495" y="164" text-anchor="middle">entry / 清空输入缓冲</text>
+
+  <!-- 自迁移：继续键入 -->
+  <path class="flow" d="M450,100 C450,66 540,66 540,100" marker-end="url(#arrow)"/>
+  <text class="lbl" x="495" y="34" text-anchor="middle">键入 1 个字符</text>
+  <text class="lbl" x="495" y="50" text-anchor="middle">[长度 &lt; 4] 计数 +1</text>
+
+  <!-- 决策节点：验证密码 -->
+  <polygon points="495,312 570,360 495,408 420,360" fill="#FBFCFE" stroke="#2F4257" stroke-width="1.6"/>
+  <text class="choice" x="495" y="365" text-anchor="middle">验证密码</text>
+
+  <!-- 读取 -> 决策 -->
+  <path class="flow" d="M495,190 L495,310" marker-end="url(#arrow)"/>
+  <text class="lbl" x="507" y="240">输入满 4 位</text>
+  <text class="lbl" x="507" y="256">触发比对</text>
+
+  <!-- 系统功能选择 -->
+  <rect class="box" x="740" y="315" width="230" height="90" rx="9"/>
+  <text class="name" x="855" y="343" text-anchor="middle">系统功能选择</text>
+  <line class="sep" x1="760" y1="355" x2="950" y2="355"/>
+  <text class="act" x="855" y="379" text-anchor="middle">do / 处理安全功能</text>
+
+  <!-- 决策 -> 功能选择 -->
+  <path class="flow" d="M570,360 L738,360" marker-end="url(#arrow)"/>
+  <text class="lbl" x="654" y="350" text-anchor="middle">[密码正确]</text>
+
+  <!-- 锁定 -->
+  <rect class="box" x="740" y="520" width="230" height="90" rx="9"/>
+  <text class="name" x="855" y="548" text-anchor="middle">锁定</text>
+  <line class="sep" x1="760" y1="560" x2="950" y2="560"/>
+  <text class="act" x="855" y="584" text-anchor="middle">entry / 启动 120 秒定时器</text>
+
+  <!-- 决策 -> 锁定 -->
+  <path class="flow" d="M495,408 L495,470 L855,470 L855,518" marker-end="url(#arrow)"/>
+  <text class="lbl" x="507" y="436">[错误次数 = 3]</text>
+  <text class="lbl" x="507" y="452">锁定控制面板</text>
+
+  <!-- 锁定 -> 读取 -->
+  <path class="flow" d="M970,545 L1020,545 L1020,120 L613,120" marker-end="url(#arrow)"/>
+  <text class="lbl" x="1012" y="278" text-anchor="end">[锁定满 120 秒]</text>
+  <text class="lbl" x="1012" y="294" text-anchor="end">解除锁定、次数清零</text>
+
+  <!-- 功能选择 -> 读取 -->
+  <path class="flow" d="M855,315 L855,230 L630,230 L630,150 L613,150" marker-end="url(#arrow)"/>
+  <text class="lbl" x="700" y="222" text-anchor="middle">[取消 / 超时]</text>
+
+  <!-- 决策 -> 读取：密码错误 -->
+  <path class="flow" d="M420,360 L300,360 L300,175 L378,175" marker-end="url(#arrow)"/>
+  <text class="lbl" x="292" y="240" text-anchor="end">[密码错误 且 错误次数 &lt; 3]</text>
+  <text class="lbl" x="292" y="256" text-anchor="end">清空缓冲，重新输入</text>
+</svg>
